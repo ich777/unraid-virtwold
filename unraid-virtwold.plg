@@ -3,7 +3,7 @@
   <!ENTITY name      "virtwold">
   <!ENTITY author    "ich777">
   <!ENTITY version   "2023.07.04">
-  <!ENTITY md5       "92aeccdb8d208a780207e1edbeb2a19c">
+  <!ENTITY md5       "a8325bc22ce768a0268e738809cf6c6f">
   <!ENTITY launch    "Settings/virtwold">
   <!ENTITY gitURL    "https://github.com/&author;/unraid-&name;/raw/master">
   <!ENTITY pluginURL "&gitURL;/unraid-&name;.plg">
