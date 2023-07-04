@@ -60,8 +60,8 @@ fi
 VIRTWOLD_ENABLED="$(cat &plugin;/settings.cfg | grep "enabled" | cut -d '=' -f2 | sed "s/'//g")"
 VIRTWOLD_INTERFACE="$(cat &plugin;/settings.cfg | grep "interface" | cut -d '=' -f2 | sed "s/'//g")"
 
-# Try to detect interface if it's set to "none"
-if [ "${VIRTWOLD_INTERFACE}" == "none" ]; then
+# Try to detect interface if it's set to "not_defined"
+if [ "${VIRTWOLD_INTERFACE}" == "not_defined" ]; then
   echo "Trying to auto detect interface..."
   VIRTWOLD_INTERFACE="$(brctl show | awk '{print $1}' | grep -E "^(vir)?br[0-9]|^eth[0-9]" | head -1)"
   if [ -z "$(VIRTWOLD_INTERFACE)" ]; then
@@ -82,7 +82,7 @@ fi
 
 echo
 echo "----------------------------------------"
-echo "---Installation of virtowld finished!---"
+echo "---Installation of virtwold finished!---"
 echo "----------------------------------------"
 echo
 
