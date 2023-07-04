@@ -4,7 +4,7 @@
   <!ENTITY author    "ich777">
   <!ENTITY version   "2023.07.04">
   <!ENTITY md5       "a8325bc22ce768a0268e738809cf6c6f">
-  <!ENTITY launch    "Settings/virtwold">
+  <!ENTITY launch    "Settings/Virtwold">
   <!ENTITY gitURL    "https://github.com/&author;/unraid-&name;/raw/master">
   <!ENTITY pluginURL "&gitURL;/unraid-&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
