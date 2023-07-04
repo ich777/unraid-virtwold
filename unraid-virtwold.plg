@@ -52,8 +52,8 @@ This plugin is based on: https://github.com/ScottESanDiego/virtwold
 
 # Create settings file if not found
 if [ ! -f "&plugin;/settings.cfg" ]; then
-  echo 'enabled='true'
-interface='not_defined'' > "&plugin;/settings.cfg"
+  echo "enabled='true'
+interface='not_defined'" > "&plugin;/settings.cfg"
 fi
 
 # Get variables from settings.cfg
@@ -71,7 +71,7 @@ if [ "${VIRTWOLD_INTERFACE}" == "not_defined" ]; then
     sed -i "/enabled=/c\enabled='false'" &plugin;/settings.cfg
   else
     echo "Found interface: ${VIRTWOLD_INTERFACE}"
-    sed -i "/interface=/c\interface=${VIRTWOLD_INTERFACE}" &plugin;/settings.cfg
+    sed -i "/interface=/c\interface=\'${VIRTWOLD_INTERFACE}\'" &plugin;/settings.cfg
   fi
 fi
 
