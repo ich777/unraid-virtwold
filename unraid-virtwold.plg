@@ -64,11 +64,12 @@ VIRTWOLD_INTERFACE="$(cat &plugin;/settings.cfg | grep "interface" | cut -d '=' 
 if [ "${VIRTWOLD_INTERFACE}" == "not_defined" ]; then
   echo "Trying to auto detect interface..."
   VIRTWOLD_INTERFACE="$(brctl show | awk '{print $1}' | grep -E "^(vir)?br[0-9]|^eth[0-9]" | head -1)"
-  if [ -z "$(VIRTWOLD_INTERFACE)" ]; then
+  if [ -z "${VIRTWOLD_INTERFACE}" ]; then
     echo
     echo "ERROR: Something went wrong while detecting the interface, please go to the plugin page to select the interface and enable the daemon"
     echo
     sed -i "/enabled=/c\enabled='false'" &plugin;/settings.cfg
+    VIRTWOLD_ENABLED=false
   else
     echo "Found interface: ${VIRTWOLD_INTERFACE}"
     sed -i "/interface=/c\interface=\'${VIRTWOLD_INTERFACE}\'" &plugin;/settings.cfg
