@@ -1,0 +1,107 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+  <!ENTITY name      "virtwold">
+  <!ENTITY author    "ich777">
+  <!ENTITY version   "2023.07.04">
+  <!ENTITY md5       "92aeccdb8d208a780207e1edbeb2a19c">
+  <!ENTITY launch    "Settings/virtwold">
+  <!ENTITY gitURL    "https://github.com/&author;/unraid-&name;/raw/master">
+  <!ENTITY pluginURL "&gitURL;/unraid-&name;.plg">
+  <!ENTITY plugin    "/boot/config/plugins/&name;">
+  <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+]>
+
+<PLUGIN  name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" min="6.11.5" support="https://forums.unraid.net/topic/83786-support-ich777-application-dockers/">
+
+<CHANGES>
+
+###2023.07.04
+- Initial release
+
+</CHANGES>
+
+<FILE Run="/bin/bash">
+<INLINE>
+# Kill virtwold if it's running to properly update the package
+if [ "$(pidof virtwold)" ]; then
+  kill $(pidof virtwold)
+fi
+
+# Remove old plugin package
+rm -f $(ls &plugin;/&name;*.txz 2>/dev/null|grep -v '&version;')
+</INLINE>
+</FILE>
+
+<FILE Name="&plugin;/&name;-&version;.txz" Run="upgradepkg --install-new">
+<URL>&gitURL;/packages/&name;-&version;.txz</URL>
+<MD5>&md5;</MD5>
+</FILE>
+
+<FILE Name="&emhttp;/README.md">
+<INLINE>
+**virtwold (Wake-on-LAN for VMs)**
+  
+virtwold is a daemon which listens for wake-on-LAN ("WOL") packets, and upon spotting one, tries to start the virtual machine with the associated MAC address.  
+  
+This plugin is based on: https://github.com/ScottESanDiego/virtwold
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash">
+<INLINE>
+
+# Create settings file if not found
+if [ ! -f "&plugin;/settings.cfg" ]; then
+  echo 'enabled='true'
+interface='not_defined'' > "&plugin;/settings.cfg"
+fi
+
+# Get variables from settings.cfg
+VIRTWOLD_ENABLED="$(cat &plugin;/settings.cfg | grep "enabled" | cut -d '=' -f2 | sed "s/'//g")"
+VIRTWOLD_INTERFACE="$(cat &plugin;/settings.cfg | grep "interface" | cut -d '=' -f2 | sed "s/'//g")"
+
+# Try to detect interface if it's set to "none"
+if [ "${VIRTWOLD_INTERFACE}" == "none" ]; then
+  echo "Trying to auto detect interface..."
+  VIRTWOLD_INTERFACE="$(brctl show | awk '{print $1}' | grep -E "^(vir)?br[0-9]|^eth[0-9]" | head -1)"
+  if [ -z "$(VIRTWOLD_INTERFACE)" ]; then
+    echo
+    echo "ERROR: Something went wrong while detecting the interface, please go to the plugin page to select the interface and enable the daemon"
+    echo
+    sed -i "/enabled=/c\enabled='false'" &plugin;/settings.cfg
+  else
+    echo "Found interface: ${VIRTWOLD_INTERFACE}"
+    sed -i "/interface=/c\interface=${VIRTWOLD_INTERFACE}" &plugin;/settings.cfg
+  fi
+fi
+
+if [ "${VIRTWOLD_ENABLED}" == "true" ]; then
+  echo "Starting virtwold"
+  echo "/usr/bin/virtwold -interface ${VIRTWOLD_INTERFACE}" | at now
+fi
+
+echo
+echo "----------------------------------------"
+echo "---Installation of virtowld finished!---"
+echo "----------------------------------------"
+echo
+
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+
+echo "----------------------------------"
+echo "---Uninstalling vortwold plugin---"
+echo "----------------------------------"
+# Stop virtwold
+kill $(pidof virtwold)
+
+# Remove plugin related files
+removepkg &name;-&version;
+rm -rf &emhttp;
+rm -rf &plugin;
+</INLINE>
+</FILE>
+</PLUGIN>
