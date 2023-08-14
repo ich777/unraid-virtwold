@@ -1,0 +1,66 @@
+Menu="Utilities"
+Title="Virtwold"
+Tag="power-off"
+Icon="virtwold.png"
+---
+<script>
+//Don't execute commands again if page is refreshed
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+
+<?php
+// Pharse settings.cfg file
+$settings = parse_ini_file('/boot/config/plugins/virtwold/settings.cfg');
+
+// Get interfaces
+$interfaces = shell_exec('ip -o link show | awk -F\': \' \'{print $2}\' | grep -E "^(vir)?br[0-9]+|^eth[0-9]+|^vhost[0-9]+" | sed \'s/@.*//\'');
+$interfaceList = explode(PHP_EOL, trim($interfaces));
+
+// Get pid if running
+$running = shell_exec('pidof virtwold');
+?>
+
+<?php if (!empty($running)) { ?>
+<h3 style="text-align: right;">Daemon: <strong><span style="color: green; text-align: right;">Running</span></strong></h3>
+<?php } else { ?>
+<h3 style="text-align: right;">Daemon: <strong><span style="color: red;">Stopped</span></strong></h3>
+<?php } ?>
+
+<form id="Save" method="post">
+  <label>Enabled:</label>
+  <select name="enabled" id="enabled">
+    <option value="true" <?php if ($settings['enabled'] == "true") echo 'selected'; ?>>Enabled</option>
+    <option value="false" <?php if ($settings['enabled'] == "false") echo 'selected'; ?>>Disabled</option>
+  </select>
+  <br>
+  <label for="interface">Interface:</label>
+  <select name="interface" id="interface">
+	<?php if ($settings['interface'] === 'not_defined'){
+      echo "<option selected disabled>not_defined</option>"; } ?>  
+    <?php foreach ($interfaceList as $iface): ?>
+      <option value="<?php echo $iface; ?>" <?php if ($settings['interface'] === $iface) echo 'selected'; ?>><?php echo $iface; ?></option>
+    <?php endforeach; ?>
+  </select>
+  <br>
+  <input name="saveSettings" type="submit" value="Save">
+</form>
+
+<?php
+if(isset($_POST['saveSettings'])) {
+  $interface = $_POST['interface'];
+  $enabled = $_POST['enabled'];
+  exec('sed -i "/interface=/c\interface=' . escapeshellarg($interface) . '" /boot/config/plugins/virtwold/settings.cfg');
+  exec('sed -i "/enabled=/c\enabled=' . escapeshellarg($enabled) . '" /boot/config/plugins/virtwold/settings.cfg');
+  if (!empty($running) && $enabled == "true") {
+	exec('kill $(pidof virtwold)');
+	shell_exec('echo "/usr/bin/virtwold -interface ' . escapeshellarg($interface) . '" | at now -M >/dev/null 2>&1');
+  } else if ($enabled === "true") {
+    exec('echo "/usr/bin/virtwold -interface ' . escapeshellarg($interface) . '" | at now -M >/dev/null 2>&1');
+  } else {
+	exec('kill $(pidof virtwold)');
+  }
+  echo '<script>parent.window.location.reload();</script>';
+}
+?>
