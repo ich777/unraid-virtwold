@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
   <!ENTITY name      "virtwold">
   <!ENTITY author    "ich777">
-  <!ENTITY version   "2023.07.04">
-  <!ENTITY md5       "a8325bc22ce768a0268e738809cf6c6f">
+  <!ENTITY version   "2023.08.14">
+  <!ENTITY md5       "ad76523d144ae7548e2d081368964285">
   <!ENTITY launch    "Settings/Virtwold">
   <!ENTITY gitURL    "https://github.com/&author;/unraid-&name;/raw/master">
   <!ENTITY pluginURL "&gitURL;/unraid-&name;.plg">
@@ -14,6 +14,11 @@
 <PLUGIN  name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" min="6.11.5" support="https://forums.unraid.net/topic/83786-support-ich777-application-dockers/">
 
 <CHANGES>
+
+###2023.08.14
+- Show Virtwold on Settings page
+- Show more interface types
+- Few minor visual changes
 
 ###2023.07.04
 - Initial release
